@@ -1,14 +1,14 @@
 {
-  "name": "react-scripts",
-  "version": "1.0.17",
-  "description": "Configuration and scripts for Create React App.",
-  "repository": "facebookincubator/create-react-app",
+  "name": "react-scripts-bootstrap-site-generator",
+  "version": "1.0.0",
+  "description": "Configuration and scripts for Create React App, customized to work as a crazy simple static site generator.",
+  "repository": "khiner/create-react-app",
   "license": "MIT",
   "engines": {
     "node": ">=6"
   },
   "bugs": {
-    "url": "https://github.com/facebookincubator/create-react-app/issues"
+    "url": "https://github.com/khiner/create-react-app/issues"
   },
   "files": [
     "bin",

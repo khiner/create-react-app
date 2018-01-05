@@ -34,13 +34,64 @@ module.exports = function(
 
   // Copy over some of the devDependencies
   appPackage.dependencies = appPackage.dependencies || {};
+  Object.assign(appPackage.dependencies, {
+    "bootstrap": "^3.3.7",
+    "jsfeat": "0.0.8",
+    "node-sass-chokidar": "0.0.3",
+    "npm-run-all": "^4.1.2",
+    "react": "^16.2.0",
+    "react-bootstrap": "^0.31.5",
+    "react-dom": "^16.2.0",
+    "react-helmet": "^5.2.0",
+    "react-router-bootstrap": "^0.24.4",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.0.17",
+    "react-snapshot": "^1.3.0",
+  })
+  appPackage.devDependencies = {
+    "babel-eslint": "^7.2.3",
+    "eslint": "^4.13.1",
+    "eslint-config-react-app": "^2.0.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.5.1",
+    "lint-staged": "^6.0.0",
+    "pre-commit": "^1.2.2",
+    "prettier-eslint": "^8.4.0",
+    "prettier-eslint-cli": "^4.6.1"
+  }
+  appPackage.prettier = {
+    "printWidth": 80,
+    "tabWidth": 2,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "bracketSpacing": true,
+    "semi": false,
+    "useTabs": false,
+    "jsxBracketSameLine": true
+  }
+  appPackage['pre-commit'] = ['pre-commit']
+  appPackage['lint-staged'] = {
+    "*.js": [
+      "prettier-eslint --write",
+      "git add",
+    ]
+  }
 
   // Setup the script rules
+  const scriptName = 'react-scripts-bootstrap-site-generator'
   appPackage.scripts = {
-    start: 'react-scripts start',
-    build: 'react-scripts build',
+    'build-css': 'node-sass-chokidar src/ -o src/',
+    'build-js': 'react-scripts build && react-snapshot',
+    'start-js': 'react-scripts start',
+    'watch-css': 'npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive',
+
+    start: 'npm-run-all -p watch-css start-js',
+    build: "npm-run-all build-css build-js",
     test: 'react-scripts test --env=jsdom',
     eject: 'react-scripts eject',
+    format: 'prettier-eslint --write "src/**/*.js"',
+    'pre-commit': 'lint-staged',
   };
 
   fs.writeFileSync(
@@ -99,7 +150,7 @@ module.exports = function(
     command = 'npm';
     args = ['install', '--save', verbose && '--verbose'].filter(e => e);
   }
-  args.push('react', 'react-dom');
+  args.push('react', 'react-dom', 'react-bootstrap', 'react-router-bootstrap', 'react-router-dom', 'react-helmet', 'react-snapshot', 'bootstrap', 'jsfeat', 'node-sass-chokidar', 'npm-run-all');
 
   // Install additional template dependencies, if present
   const templateDependenciesPath = path.join(
@@ -124,6 +175,13 @@ module.exports = function(
     console.log();
 
     const proc = spawn.sync(command, args, { stdio: 'inherit' });
+    if (proc.status !== 0) {
+      console.error(`\`${command} ${args.join(' ')}\` failed`);
+      return;
+    }
+
+    args = ['install', '--save-dev', 'babel-eslint', 'eslint', 'eslint-config-airbnb', 'eslint-plugin-import', 'eslint-plugin-jsx-a11y', 'eslint-plugin-react', 'lint-staged', 'pre-commit', 'prettier-eslint', 'prettier-eslint-cli']
+    proc = spawn.sync(command, args, { stdio: 'inherit' });
     if (proc.status !== 0) {
       console.error(`\`${command} ${args.join(' ')}\` failed`);
       return;
